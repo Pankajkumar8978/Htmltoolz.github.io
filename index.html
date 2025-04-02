@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+    <div class="form">
+      <input type="text" id="locationInput" placeholder="Enter location">
+      <button id="searchButton">Search</button>
+    </div>
+    <div id="weatherInfo"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+<style type="text/css">body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+  background-color: #f2f2f2;
+}
+
+.container {
+  width: 50%;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  color: #007BFF;
+}
+
+.form {
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: 70%;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+#weatherInfo {
+  margin-top: 20px;
+}
+</style>
+
+<script type="text/javascript">const locationInput = document.getElementById('locationInput');
+const searchButton = document.getElementById('searchButton');
+const weatherInfoDiv = document.getElementById('weatherInfo');
+
+const apiKey = 'b6854cf9c9528db5037f0bbbe4766fde';
+
+searchButton.addEventListener('click', searchWeather);
+
+function searchWeather() {
+  const location = locationInput.value.trim();
+
+  if (location === '') {
+    return;
+  }
+
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.cod === '404') {
+        weatherInfoDiv.innerHTML = '<p>Location not found. Please try again.</p>';
+      } else {
+        const weatherDescription = data.weather[0].description;
+        const temperature = data.main.temp;
+        const humidity = data.main.humidity;
+        const windSpeed = data.wind.speed;
+
+        const weatherInfoHTML = `
+          <h2>${location}</h2>
+          <p>${weatherDescription}</p>
+          <p>Temperature: ${temperature} &#8451;</p>
+          <p>Humidity: ${humidity}%</p>
+          <p>Wind Speed: ${windSpeed} m/s</p>
+        `;
+
+        weatherInfoDiv.innerHTML = weatherInfoHTML;
+      }
+    })
+    .catch(error => {
+      weatherInfoDiv.innerHTML = '<p>An error occurred. Please try again later.</p>';
+      console.error('Error:', error);
+    });
+
+  locationInput.value = '';
+}
+</script>
